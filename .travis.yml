@@ -1,8 +1,5 @@
 language: go
 
-env:
-    - "PATH=/home/travis/gopath/bin:$PATH"
-
 before_install:
     - go get github.com/mitchellh/gox
     - gox -build-toolchain
