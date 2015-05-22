@@ -3,3 +3,11 @@ language: go
 go:
     - 1.4
     - tip
+
+before_install:
+    - go get github.com/mitchellh/gox
+    - gox -build-toolchain
+    - go get github.com/tcnksm/ghr
+
+after_success:
+    - gox -output "dist/{{.OS}}_{{.Arch}}_{{.Dir}}" github.com/rubenv/dupefinder/bin/dupefinder
