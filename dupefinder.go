@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-type FileHash struct {
+type fileHash struct {
 	Hash     string
 	Filename string
 }
@@ -41,7 +41,7 @@ func Generate(catalog string, folders ...string) error {
 
 	errs := make(chan error)
 	filenames := make(chan string, 100)
-	entries := make(chan FileHash, 100)
+	entries := make(chan fileHash, 100)
 
 	go walkAllFolders(errs, filenames, folders...)
 	go hashFiles(errs, filenames, entries)
@@ -82,7 +82,7 @@ func Detect(catalog string, echo, rm bool, folders ...string) error {
 
 	errs := make(chan error)
 	filenames := make(chan string, 100)
-	entries := make(chan FileHash, 100)
+	entries := make(chan fileHash, 100)
 
 	go walkAllFolders(errs, filenames, folders...)
 	go hashFiles(errs, filenames, entries)
@@ -189,7 +189,7 @@ func walkFolder(filename string, out chan string) error {
 	return nil
 }
 
-func hashFiles(errs chan error, filenames chan string, entries chan FileHash) {
+func hashFiles(errs chan error, filenames chan string, entries chan fileHash) {
 	defer close(entries)
 
 	for {
@@ -204,7 +204,7 @@ func hashFiles(errs chan error, filenames chan string, entries chan FileHash) {
 			return
 		}
 
-		entries <- FileHash{
+		entries <- fileHash{
 			Hash:     hash,
 			Filename: filename,
 		}

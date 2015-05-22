@@ -9,6 +9,21 @@ Detect duplicate files across different machines
 go get github.com/rubenv/dupefinder/...
 ```
 
+## Usage
+
+```
+Usage: dupefinder -generate filename folder...
+    Generates a catalog file at filename based on one or more folders
+
+Usage: dupefinder -detect [-dryrun / -rm] filename folder...
+    Detects duplicates using a catalog file in on one or more folders
+
+  -detect=false: Detect duplicate files using a catalog
+  -dryrun=false: Print what would be deleted
+  -generate=false: Generate a catalog file
+  -rm=false: Delete detected duplicates (at your own risk!)
+```
+
 ## Usage as a library
 
 Import into your application with:
@@ -29,6 +44,18 @@ func Detect(catalog string, echo, rm bool, folders ...string) error
 
 ```go
 func Generate(catalog string, folders ...string) error
+```
+
+#### func  ParseCatalog
+
+```go
+func ParseCatalog(filename string) (map[string]string, error)
+```
+
+#### func  ParseCatalogReader
+
+```go
+func ParseCatalogReader(reader io.Reader) (map[string]string, error)
 ```
 
 ## License
