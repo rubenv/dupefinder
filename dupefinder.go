@@ -22,6 +22,10 @@ const header = `# This is a dupefinder catalog
 
 `
 
+// Catalog of hash to filename mappings
+type DupeCatalog map[string]string
+
+// Generate a catalog file based on a set of folders
 func Generate(catalog string, folders ...string) error {
 	err := validateFolders(folders...)
 	if err != nil {
@@ -69,6 +73,7 @@ func Generate(catalog string, folders ...string) error {
 	return nil
 }
 
+// Detect duplicates. Set echo to true to print duplicates, rm to delete them.
 func Detect(catalog string, echo, rm bool, folders ...string) error {
 	err := validateFolders(folders...)
 	if err != nil {
@@ -104,7 +109,9 @@ func Detect(catalog string, echo, rm bool, folders ...string) error {
 
 			if echo {
 				fmt.Printf("Would delete %s (matches %s)\n", entry.Filename, orig)
-			} else {
+			}
+
+			if rm {
 				fmt.Printf("Deleting %s (matches %s)\n", entry.Filename, orig)
 				err := os.Remove(entry.Filename)
 				if err != nil {
@@ -226,7 +233,8 @@ func hashFile(filename string) (string, error) {
 	return fmt.Sprintf("%x", hash.Sum([]byte{})), nil
 }
 
-func ParseCatalog(filename string) (map[string]string, error) {
+// Parse the catalog file at filename
+func ParseCatalog(filename string) (DupeCatalog, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -236,8 +244,9 @@ func ParseCatalog(filename string) (map[string]string, error) {
 	return ParseCatalogReader(file)
 }
 
-func ParseCatalogReader(reader io.Reader) (map[string]string, error) {
-	result := map[string]string{}
+// Parse a catalog file using an io.Reader
+func ParseCatalogReader(reader io.Reader) (DupeCatalog, error) {
+	result := DupeCatalog{}
 
 	bufreader := bufio.NewReader(reader)
 

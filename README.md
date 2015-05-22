@@ -2,14 +2,14 @@
 
 [![Build Status](https://travis-ci.org/rubenv/dupefinder.svg?branch=master)](https://travis-ci.org/rubenv/dupefinder) [![GoDoc](https://godoc.org/github.com/rubenv/dupefinder?status.png)](https://godoc.org/github.com/rubenv/dupefinder)
 
-Detect duplicate files across different machines
+Detect duplicate files across different machines, using SHA256
 
-## Installation
+# Installation
 ```
 go get github.com/rubenv/dupefinder/...
 ```
 
-## Usage
+# Usage
 
 ```
 Usage: dupefinder -generate filename folder...
@@ -24,7 +24,7 @@ Usage: dupefinder -detect [-dryrun / -rm] filename folder...
   -rm=false: Delete detected duplicates (at your own risk!)
 ```
 
-## Usage as a library
+# As a library
 
 Import into your application with:
 
@@ -39,24 +39,36 @@ import "github.com/rubenv/dupefinder"
 ```go
 func Detect(catalog string, echo, rm bool, folders ...string) error
 ```
+Detect duplicates. Set echo to true to print duplicates, rm to delete them.
 
 #### func  Generate
 
 ```go
 func Generate(catalog string, folders ...string) error
 ```
+Generate a catalog file based on a set of folders
+
+#### type DupeCatalog
+
+```go
+type DupeCatalog map[string]string
+```
+
+Catalog of hash to filename mappings
 
 #### func  ParseCatalog
 
 ```go
-func ParseCatalog(filename string) (map[string]string, error)
+func ParseCatalog(filename string) (DupeCatalog, error)
 ```
+Parse the catalog file at filename
 
 #### func  ParseCatalogReader
 
 ```go
-func ParseCatalogReader(reader io.Reader) (map[string]string, error)
+func ParseCatalogReader(reader io.Reader) (DupeCatalog, error)
 ```
+Parse a catalog file using an io.Reader
 
 ## License
 
