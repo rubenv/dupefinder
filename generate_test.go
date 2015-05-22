@@ -1,6 +1,9 @@
 package dupefinder
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestGenerateFolders(t *testing.T) {
 	err := Generate("catalog.txt", "invalid")
@@ -10,10 +13,23 @@ func TestGenerateFolders(t *testing.T) {
 }
 
 func TestGenerateFinds(t *testing.T) {
-	err := Generate("catalog.txt", "fixtures/a")
+	catalog := tempFilename(t)
+	defer os.Remove(catalog)
+
+	err := Generate(catalog, "fixtures/a")
 	if err != nil {
 		t.Error(err)
 	}
 
-	// TODO: Read catalog, see if files are there and check checksums
+	entries, err := ParseCatalog(catalog)
+	if err != nil {
+		t.Error(err)
+	}
+	if len(entries) != 2 {
+		t.Errorf("Unexpected number of entries: %d", len(entries))
+	}
+
+	if entries["00e3261a6e0d79c329445acd540fb2b07187a0dcf6017065c8814010283ac67f"] != "fixtures/a/c/bla.txt" {
+		t.Error("Bad entry")
+	}
 }
