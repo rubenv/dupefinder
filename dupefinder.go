@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"runtime"
 	"strings"
+	"sync"
 )
 
 type fileHash struct {
@@ -199,23 +201,33 @@ func walkFolder(filename string, out chan string) error {
 func hashFiles(errs chan error, filenames chan string, entries chan fileHash) {
 	defer close(entries)
 
-	for {
-		filename, ok := <-filenames
-		if !ok {
-			return
-		}
+	var wg sync.WaitGroup
 
-		hash, err := hashFile(filename)
-		if err != nil {
-			errs <- err
-			return
-		}
+	wg.Add(runtime.NumCPU())
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go func() {
+			defer wg.Done()
+			for {
+				filename, ok := <-filenames
+				if !ok {
+					return
+				}
 
-		entries <- fileHash{
-			Hash:     hash,
-			Filename: filename,
-		}
+				hash, err := hashFile(filename)
+				if err != nil {
+					errs <- err
+					return
+				}
+
+				entries <- fileHash{
+					Hash:     hash,
+					Filename: filename,
+				}
+			}
+		}()
 	}
+
+	wg.Wait()
 }
 
 func hashFile(filename string) (string, error) {

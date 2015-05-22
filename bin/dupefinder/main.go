@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/rubenv/dupefinder"
 )
@@ -17,6 +18,8 @@ const (
 )
 
 func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
 	detect := true
 	generate := false
 
