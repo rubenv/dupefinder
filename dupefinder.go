@@ -95,6 +95,7 @@ func Detect(catalog string, echo, rm bool, folders ...string) error {
 	go hashFiles(errs, filenames, entries)
 
 	deleted := int64(0)
+	deletedCount := int64(0)
 	for {
 		entry, ok := <-entries
 		if !ok {
@@ -108,6 +109,7 @@ func Detect(catalog string, echo, rm bool, folders ...string) error {
 			}
 
 			deleted += fi.Size()
+			deletedCount += 1
 
 			if echo {
 				fmt.Printf("Would delete %s (matches %s)\n", entry.Filename, orig)
@@ -123,7 +125,7 @@ func Detect(catalog string, echo, rm bool, folders ...string) error {
 		}
 	}
 
-	fmt.Printf("Size saved: %d bytes\n", deleted)
+	fmt.Printf("Size saved: %d bytes (%d files)\n", deleted, deletedCount)
 
 	select {
 	case err := <-errs:
